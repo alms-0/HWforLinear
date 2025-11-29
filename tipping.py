@@ -1,7 +1,7 @@
 # 1. Import everything from the fitting_functions file.
 from fitting_functions import *
 
-# 2. Import necessary libraries for numerical work, plotting, and fitting.
+# 2. Import the libraries we will need
 import numpy as np                     # Used for loading and manipulating data
 import matplotlib.pyplot as plt        # Used for graphing
 from scipy import stats                # Used for performing linear regression fits
@@ -15,8 +15,7 @@ x_bill = data['Bill']     # x-values (in dollars)
 y_tip = data['Tip']       # y-values (in dollars)
 
 
-# 5. Perform a linear fit using SciPy's stats.linregress().
-
+# 5. Do a linear fit using SciPy
 fit1 = stats.linregress(x_bill, y_tip)
 
 # 6. Create a scatter plot of the data.
@@ -29,19 +28,18 @@ plt.title("Tip vs Bill")
 # 7. Plot the best-fit line.
 plt.plot(x_bill, fit1.intercept + fit1.slope*x_bill,
          color='red', label='Linear Fit')
-
 plt.legend()
 plt.grid(True)
 plt.show()
 print("Tip vs Bill linear fit:")
 print_equation(fit1.slope, fit1.intercept, x_units="dollars", y_units="dollars")
 
-# 9. Now repeat the process but use Percent Tip instead of Tip.
+# 9. Same process for Percent Tip instead of Tips.
 
 x_bill2 = data['Bill']         # x values stay the same
 y_pct = data['PctTip']         # y-axis is percent_tip now (% units)
 
-# 10. Perform a new regression for this relationship.
+# 10. Do a linear fit for them again.
 fit2 = stats.linregress(x_bill2, y_pct)
 
 # 11. Scatter plot for Percent Tip vs Bill.
