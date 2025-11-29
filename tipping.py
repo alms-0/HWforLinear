@@ -1,57 +1,63 @@
-# tipping.py
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.optimize import curve_fit
+# 1. Import everything from the fitting_functions file.
 from fitting_functions import *
 
-# Step 1: Read in the data
-data = np.genfromtxt("tips.csv", delimiter=",", skip_header=1, dtype=float)
+# 2. Import necessary libraries for numerical work, plotting, and fitting.
+import numpy as np                     # Used for loading and manipulating data
+import matplotlib.pyplot as plt        # Used for graphing
+from scipy import stats                # Used for performing linear regression fits
 
-# Columns: Bill = column 0, Tip = column 1, PctTip = column 2
-bill = data[:,0]
-tip = data[:,1]
-pct_tip = data[:,2]
+# 3. Load the CSV data file into a NumPy array called "data".
+data = np.genfromtxt("tips.csv", delimiter=",", names=True)
 
-# Step 2: Define linear function
-def linear(x, m, b):
-    return m*x + b
+# 4. Extract Bill and Tip as x and y values.
 
-# ---- First Fit: Bill vs Tip ----
-params, cov = curve_fit(linear, bill, tip)
-m, b = params
+x_bill = data['Bill']     # x-values (in dollars)
+y_tip = data['Tip']       # y-values (in dollars)
 
+
+# 5. Perform a linear fit using SciPy's stats.linregress().
+
+fit1 = stats.linregress(x_bill, y_tip)
+
+# 6. Create a scatter plot of the data.
 plt.figure()
-plt.scatter(bill, tip, label="Data")
-plt.plot(bill, linear(bill, m, b), color="red", label="Fit")
-plt.xlabel("Bill ($)")
-plt.ylabel("Tip ($)")
+plt.scatter(x_bill, y_tip, color='blue', label='Data Points')
+plt.xlabel("Bill (dollars)")            # Label x-axis WITH UNITS
+plt.ylabel("Tip (dollars)")             # Label y-axis WITH UNITS
+plt.title("Tip vs Bill")
+
+# 7. Plot the best-fit line.
+plt.plot(x_bill, fit1.intercept + fit1.slope*x_bill,
+         color='red', label='Linear Fit')
+
 plt.legend()
-plt.title("Bill vs Tip")
+plt.grid(True)
+plt.show()
+print("Tip vs Bill linear fit:")
+print_equation(fit1.slope, fit1.intercept, x_units="dollars", y_units="dollars")
+
+# 9. Now repeat the process but use Percent Tip instead of Tip.
+
+x_bill2 = data['Bill']         # x values stay the same
+y_pct = data['PctTip']         # y-axis is percent_tip now (% units)
+
+# 10. Perform a new regression for this relationship.
+fit2 = stats.linregress(x_bill2, y_pct)
+
+# 11. Scatter plot for Percent Tip vs Bill.
+plt.figure()
+plt.scatter(x_bill2, y_pct, color='green', label='Data Points')
+plt.xlabel("Bill (dollars)")      # x-axis units stay the same
+plt.ylabel("Percent Tip (%)")     # y-axis is now a percentage
+plt.title("Percent Tip vs Bill")
+
+# 12. Plot the new regression line.
+plt.plot(x_bill2, fit2.intercept + fit2.slope*x_bill2,
+         color='magenta', label='Linear Fit')
+plt.legend()
+plt.grid(True)
 plt.show()
 
-# Print equation with units
-print_equation(m, b, "Bill ($)", "Tip ($)")
-# Example output (yours will differ):
-# Tip ($) = 0.15 * Bill ($) + 1.00
-# Copy this output into a comment:
-# Tip ($) = 0.15 * Bill ($) + 1.00
-
-# ---- Second Fit: Bill vs PctTip ----
-params2, cov2 = curve_fit(linear, bill, pct_tip)
-m2, b2 = params2
-
-plt.figure()
-plt.scatter(bill, pct_tip, label="Data")
-plt.plot(bill, linear(bill, m2, b2), color="green", label="Fit")
-plt.xlabel("Bill ($)")
-plt.ylabel("Tip (%)")
-plt.legend()
-plt.title("Bill vs Percent Tip")
-plt.show()
-
-# Print equation with units
-print_equation(m2, b2, "Bill ($)", "Tip (%)")
-# Example output (yours will differ):
-# Tip (%) = -0.01 * Bill ($) + 20.0
-# Copy this output into a comment:
-# Tip (%) = -0.01 * Bill ($) + 20.0
+# 13. Print line equation for Percent Tip.
+print("Percent Tip vs Bill linear fit:")
+print_equation(fit2.slope, fit2.intercept, x_units="dollars", y_units="%")
